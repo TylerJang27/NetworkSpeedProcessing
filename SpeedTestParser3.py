@@ -12,9 +12,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
-import matplotlib.patheffects as path_effects
 from matplotlib.dates import DateFormatter
-from matplotlib.dates import datetime as dt ###
 from scipy.interpolate import spline
 import dateutil.parser
 
@@ -97,8 +95,8 @@ plt.grid(alpha=0.4)
 #Download and Upload Speed
 plt.plot_date(data['Time'], data['Upload'], '-', color=up_c1, lw=msize/2, alpha=0.8)
 plt.plot_date(data['Time'], data['Download'], '-', color=down_c1, lw=msize/2, alpha=0.5)
-plt.plot_date(time_stretch, down_stretch, 'yo', mfc=down_c1, markevery=multiplier, ms=msize, path_effects=[path_effects.SimpleLineShadow(),path_effects.Normal()])
-plt.plot_date(time_stretch, up_stretch, 'bo', mfc=up_c1, markevery=multiplier, ms=msize, path_effects=[path_effects.SimpleLineShadow(),path_effects.Normal()])
+plt.plot_date(time_stretch, down_stretch, 'yo', mfc=down_c1, markevery=multiplier, ms=msize)
+plt.plot_date(time_stretch, up_stretch, 'bo', mfc=up_c1, markevery=multiplier, ms=msize)
 
 
 #Shading
@@ -133,7 +131,7 @@ plt.xticks(time_of_test1, time_of_test2)
 
 #Latency Plot
 plt.subplot(212)
-plt.plot_date(time_stretch, lat_stretch, 'go', mfc=gray_c1, markevery=multiplier, ms=msize, path_effects=[path_effects.SimpleLineShadow(),path_effects.Normal()])
+plt.plot_date(time_stretch, lat_stretch, 'go', mfc=gray_c1, markevery=multiplier, ms=msize)
 plt.plot_date(data['Time'], data['Latency'], '-', color=gray_c1, lw=msize/2, alpha=0.75)
 
 plt.fill_between(d, data['Latency'], y2=0, facecolor=gray_c2, alpha=0.95, interpolate=True)
