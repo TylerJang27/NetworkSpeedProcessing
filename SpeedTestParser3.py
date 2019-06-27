@@ -92,9 +92,20 @@ plt.plot_date(time_stretch, up_stretch, 'ro', markevery=multiplier, ms=msize, pa
 #Shading
 d = data['Time'].values
 plt.fill_between(d, data['Download'], data['Upload'], where=data['Download'] >= data['Upload'],facecolor='dodgerblue', alpha=0.9, interpolate=True)
+plt.fill_between(d, data['Download'] - 0.65, data['Upload'], where=data['Download']-0.65 >= data['Upload'],facecolor=(0.05, 0.50, 0.9), alpha=0.9, interpolate=True)
+
 plt.fill_between(d, data['Upload'], y2=0, where=data['Download'] >= data['Upload'],facecolor='salmon', alpha=0.9, interpolate=True)
+plt.fill_between(d, data['Upload'] - 0.65, y2=0, where=data['Download'] >= data['Upload'],facecolor=(.90, .50, .50), alpha=0.9, interpolate=True)
+
+
 plt.fill_between(d, data['Download'], data['Upload'], where=data['Download'] < data['Upload'],facecolor='salmon', alpha=0.9, interpolate=True)
+#plt.fill_between(d, data['Download'] - 0.75, data['Upload'], where=data['Download'] < data['Upload'] - 0.65,facecolor=(0.9, 0.5, 0.5), alpha=0.9, interpolate=True)
+
 plt.fill_between(d, data['Download'], y2=0, where=data['Download'] < data['Upload'],facecolor='dodgerblue', alpha=0.9, interpolate=True)
+plt.fill_between(d, data['Download'] - 0.65, y2=0, where=data['Download'] < data['Upload'],facecolor=(0.05, 0.5, 0.9), alpha=0.9, interpolate=True)
+
+plt.fill_between(d, data['Upload'] - 0.65, data['Download'], where=data['Download'] < data['Upload'] - 0.65,facecolor=(0.9, 0.5, 0.5), alpha=0.9, interpolate=True)
+
 
 blue_patch = mpatches.Patch(color='blue', label=name1)
 red_patch = mpatches.Patch(color='red', label=name2)
@@ -109,6 +120,8 @@ plt.xticks(time_of_test1, time_of_test2)
 plt.subplot(212)
 plt.plot_date(time_stretch, lat_stretch, 'go', markevery=multiplier, ms=msize, path_effects=[path_effects.SimpleLineShadow(),path_effects.Normal()])
 plt.fill_between(d, data['Latency'], y2=0, facecolor='mediumseagreen', alpha=0.9, interpolate=True)
+plt.fill_between(d, data['Latency'] - 7, y2=0, facecolor=(0.2, 0.65, 0.4), alpha=0.9, interpolate=True)
+
 plt.xlabel("Time", fontsize=20)
 
 plt.xticks(rotation=25, color="k")
