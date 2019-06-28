@@ -2,12 +2,11 @@
 """
 Created on Thu Jun 27 09:16:26 2019
 
-@author: tajgo
 @author: cyberpizza team
 Some code for graphing and calculating statistics taken from https://pundit.pratt.duke.edu/wiki/
 Date graphing and filling taken from https://stackoverflow.com/questions/29329725/pandas-and-matplotlib-fill-between-vs-datetime64/29329823#29329823
 """
-
+# %% Import libraries
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -16,15 +15,19 @@ from matplotlib.dates import DateFormatter
 from scipy.interpolate import spline
 import dateutil.parser
 
+# %% Global variables necessary for user customization
+data_to_show = 10 ####should be 14 by default once we set it up
+label_skipper = data_to_show // 7
+
 # %% Prepare data   
 # Load data from Sample_to_parse.txt
 speed_data = np.loadtxt('sample_to_parse.txt', skiprows=4, usecols=(4,5,7)) #missing date ()
 # Copy data from each column into new variables
-down_speed = speed_data[:, 0].copy()
+down_speed = speed_data[:data_to_show, 0].copy()
 down_speed = down_speed / 1000000
-up_speed = speed_data[:, 1].copy()
+up_speed = speed_data[:data_to_show, 1].copy()
 up_speed = up_speed / 1000000
-latency = speed_data[:, 2].copy()
+latency = speed_data[:data_to_show, 2].copy()
 num_points=1000
 num_points2=(int)(num_points * (down_speed.size-1)/down_speed.size)
 time_of_test=np.arange(0, (int)(down_speed.size), 1)
@@ -36,11 +39,11 @@ lines = f.readlines()
 time_data = []
 time_of_test1 = []
 time_of_test2 = []
-for x in range(4, len(lines) - 1):
+
+for x in range(4, 4+data_to_show):
     time_data.append((lines[x][100:126]))
     new_date=dateutil.parser.parse(lines[x][100:126])
     time_of_test1.append(new_date)
-    #time_of_test2.append(new_date.year * 10000000000 + new_date.month * 100000000 + new_date.day * 1000000 + new_date.hour * 10000 + new_date.minute * 100 + new_date.second)
 f.close()
 
 
@@ -87,9 +90,9 @@ for k in time_of_test1:
 fig, axs = plt.subplots(2, 1,figsize=(10, 10))
 plt.rc('xtick',labelsize=15)
 plt.rc('ytick',labelsize=15)
-fig.subplots_adjust(hspace=0.5)
+fig.subplots_adjust(hspace=0.4)
 plt.subplot(211)
-fig.suptitle("Internet Speeds Over Last Week", fontsize=30)
+fig.suptitle("Internet Speeds Over Time", fontsize=30, y=0.93)
 plt.grid(alpha=0.4)
 
 #Download and Upload Speed
@@ -127,7 +130,7 @@ plt.ylabel("Speed (Mbps)", fontsize=20)
 plt.figlegend([blue_patch, red_patch], ('Download', 'Upload'), loc=(0.75, 0.81), fancybox=True, framealpha=0.8, shadow=True, fontsize=15)
 
 plt.xticks(rotation=25, color="k")
-plt.xticks(time_of_test1, time_of_test2)
+plt.xticks(time_of_test1[::label_skipper], time_of_test2[::label_skipper])
 
 #Latency Plot
 plt.subplot(212)
@@ -140,7 +143,7 @@ plt.fill_between(d, data['Latency'], y2=0, facecolor=gray_c2, alpha=0.95, interp
 plt.xlabel("Time", fontsize=20)
 plt.grid(alpha=0.4)
 plt.xticks(rotation=25, color="k")
-plt.xticks(time_of_test1, time_of_test2)
+plt.xticks(time_of_test1[::label_skipper], time_of_test2[::label_skipper])
 plt.ylabel("Latency (ms)", fontsize=20)
 
 # %% Save and show figure
