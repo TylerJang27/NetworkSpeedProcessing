@@ -16,35 +16,39 @@ from scipy.interpolate import spline
 import dateutil.parser
 
 # %% Global variables necessary for user customization
-data_to_show = 10 ####should be 14 by default once we set it up
+data_to_show = 10 ####should be 14 by default once we set it up #already accounted for top-down bottom-up order
 label_skipper = data_to_show // 7
 
 # %% Prepare data   
 # Load data from Sample_to_parse.txt
 speed_data = np.loadtxt('sample_to_parse.txt', skiprows=4, usecols=(4,5,7)) #missing date ()
+
+# Read dates
+f=open('sample_to_parse.txt', 'r')
+lines = f.readlines()
+num_lines=(len(lines)-1)
+time_data = []
+time_of_test1 = []
+time_of_test2 = []
+
+for x in range(num_lines-data_to_show, num_lines):
+    time_data.append((lines[x][100:126]))
+    new_date=dateutil.parser.parse(lines[x][100:126])
+    time_of_test1.append(new_date)
+f.close()
+
 # Copy data from each column into new variables
-down_speed = speed_data[:data_to_show, 0].copy()
+down_speed = speed_data[num_lines-data_to_show-4:num_lines-4, 0].copy()
 down_speed = down_speed / 1000000
-up_speed = speed_data[:data_to_show, 1].copy()
+up_speed = speed_data[num_lines-data_to_show-4:num_lines-4, 1].copy()
 up_speed = up_speed / 1000000
-latency = speed_data[:data_to_show, 2].copy()
+latency = speed_data[num_lines-data_to_show-4:num_lines-4, 2].copy()
 num_points=1000
 num_points2=(int)(num_points * (down_speed.size-1)/down_speed.size)
 time_of_test=np.arange(0, (int)(down_speed.size), 1)
 time_model = np.linspace(np.min(time_of_test), np.max(time_of_test), num_points2)
 
-# Read dates
-f=open('sample_to_parse.txt', 'r')
-lines = f.readlines()
-time_data = []
-time_of_test1 = []
-time_of_test2 = []
 
-for x in range(4, 4+data_to_show):
-    time_data.append((lines[x][100:126]))
-    new_date=dateutil.parser.parse(lines[x][100:126])
-    time_of_test1.append(new_date)
-f.close()
 
 
 # %% Generate estimates and model
