@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 """
 Created on Thu Jun 27 09:16:26 2019
@@ -21,10 +22,10 @@ label_skipper = data_to_show // 7
 
 # %% Prepare data   
 # Load data from Sample_to_parse.txt
-speed_data = np.loadtxt('sample_to_parse.txt', skiprows=4, usecols=(4,5,7)) #missing date ()
+speed_data = np.loadtxt('SpeedTestTable.txt', skiprows=4, usecols=(4,5,7)) #missing date ()
 
 # Read dates
-f=open('sample_to_parse.txt', 'r')
+f=open('SpeedTestTable.txt', 'r')
 lines = f.readlines()
 num_lines=(len(lines)-1)
 time_data = []
@@ -33,9 +34,12 @@ time_of_test2 = []
 
 for x in range(num_lines-data_to_show, num_lines):
     time_data.append((lines[x][100:126]))
+    print(time_data[len(time_data)-1])
     new_date=dateutil.parser.parse(lines[x][100:126])
     time_of_test1.append(new_date)
 f.close()
+
+print(speed_data)
 
 # Copy data from each column into new variables
 down_speed = speed_data[num_lines-data_to_show-4:num_lines-4, 0].copy()
@@ -65,7 +69,16 @@ lat_avg = np.mean(latency)
 
 oldest = min(time_of_test1)
 youngest = max(dt for dt in time_of_test1)
-date_model = pd.date_range(oldest, youngest, periods=num_points2)
+my_freq=pd.Timedelta((youngest-oldest)/num_points2)
+
+#date_model = pd.date_range(start=oldest, end=youngest, periods=num_points2)
+date_model = pd.date_range(start=oldest, end=youngest, freq=my_freq)[0:len(down_model)]
+#print(len(date_model))
+#print(num_points2)
+#print(len(down_model))
+#print(len(up_model))
+#print(down_speed[::1])
+#print(down_model[::10])
 data = pd.DataFrame({'Download': down_model, 'Upload': up_model, 'Latency': lat_model, 'Time': date_model})
 multiplier = (int)(num_points2/len(time_data))
 time_stretch = [val for val in time_of_test1 for _ in range(multiplier)]
@@ -91,12 +104,11 @@ for k in time_of_test1:
     time_of_test2.append(k.strftime('%m/%d %H:%m'))
 
 # %%Plot Graphs of Data
-fig, axs = plt.subplots(2, 1,figsize=(10, 10))
+#plt.figure()
+plt.figure(1, figsize=(12.5,7.5))
 plt.rc('xtick',labelsize=15)
 plt.rc('ytick',labelsize=15)
-fig.subplots_adjust(hspace=0.4)
-plt.subplot(211)
-fig.suptitle("Internet Speeds Over Time", fontsize=30, y=0.93)
+plt.title("Internet Speeds Over Time", fontsize=30, y=0.9)
 plt.grid(alpha=0.4)
 
 #Download and Upload Speed
@@ -135,9 +147,13 @@ plt.figlegend([blue_patch, red_patch], ('Download', 'Upload'), loc=(0.75, 0.81),
 
 plt.xticks(rotation=25, color="k")
 plt.xticks(time_of_test1[::label_skipper], time_of_test2[::label_skipper])
+plt.savefig('net_speed_plot1.png')
+plt.close()
 
 #Latency Plot
-plt.subplot(212)
+#plt.figure()
+plt.figure(2, figsize=(12.5,7.5))
+plt.title("Latency Over Time", fontsize=30, y=0.9)
 plt.plot_date(time_stretch, lat_stretch, 'go', mfc=gray_c1, markevery=multiplier, ms=msize)
 plt.plot_date(data['Time'], data['Latency'], '-', color=gray_c1, lw=msize/2, alpha=0.75)
 
@@ -151,6 +167,6 @@ plt.xticks(time_of_test1[::label_skipper], time_of_test2[::label_skipper])
 plt.ylabel("Latency (ms)", fontsize=20)
 
 # %% Save and show figure
-plt.savefig('net_speed_plot.png')
-plt.show()
-
+plt.savefig('net_speed_plot2.png')
+#plt.show()
+plt.close()
