@@ -12,7 +12,6 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
-from matplotlib.dates import DateFormatter
 from scipy.interpolate import spline
 import dateutil.parser
 
@@ -85,7 +84,7 @@ time_stretch = [val for val in time_of_test1 for _ in range(multiplier)]
 down_stretch = [val for val in down_speed for _ in range(multiplier)]
 up_stretch = [val for val in up_speed for _ in range(multiplier)]
 lat_stretch = [val for val in latency for _ in range(multiplier)]
-msize=6
+msize=8
 up_c1=(0, 0.33, 0.53)
 up_c2=(0.02,0.47,0.69)
 down_c1=(0.91, 0.6, 0.14)
@@ -108,8 +107,11 @@ for k in time_of_test1:
 plt.figure(1, figsize=(12.5,7.5))
 plt.rc('xtick',labelsize=15)
 plt.rc('ytick',labelsize=15)
-plt.title("Internet Speeds Over Time", fontsize=30, y=0.9)
+plt.title("Internet Speeds Over Time", fontsize=30, y=1.0)
 plt.grid(alpha=0.4)
+plt.ylim(bottom=0)
+ylim_top=max(max(data['Download']), max(data['Upload']))*1.1
+plt.ylim(top=ylim_top)
 
 #Download and Upload Speed
 plt.plot_date(data['Time'], data['Upload'], '-', color=up_c1, lw=msize/2, alpha=0.8)
@@ -121,12 +123,12 @@ plt.plot_date(time_stretch, up_stretch, 'bo', mfc=up_c1, markevery=multiplier, m
 #Shading
 d = data['Time'].values
 ###plt.fill_between(d, data['Download'], data['Upload'], where=data['Download'] >= data['Upload'],facecolor=down_c2, alpha=0.9, interpolate=True)
-plt.fill_between(d, data['Download'] - 0.1, y2=0, where=data['Download']-0.1 >= data['Upload'],facecolor=down_c2, alpha=0.4, interpolate=True)
-plt.fill_between(d, data['Download'] - 0.1, y2=0, where=data['Download']-0.1 < data['Upload'],facecolor=down_c2, alpha=0.4, interpolate=True)
+#plt.fill_between(d, data['Download'] - 0.1, y2=0, where=data['Download']-0.1 >= data['Upload'],facecolor=down_c2, alpha=0.4, interpolate=True)
+#plt.fill_between(d, data['Download'] - 0.1, y2=0, where=data['Download']-0.1 < data['Upload'],facecolor=down_c2, alpha=0.4, interpolate=True)
 
 ###plt.fill_between(d, data['Upload'], y2=0, where=data['Download'] >= data['Upload'],facecolor=up_c2, alpha=0.9, interpolate=True)
 ###plt.fill_between(d, data['Upload'] - 0.65, y2=0, where=data['Download'] >= data['Upload'],facecolor=up_c1, alpha=0.9, interpolate=True)
-plt.fill_between(d, data['Upload'] - 0.1, y2=0, where=(True),facecolor=up_c1, alpha=0.6, interpolate=True)
+#plt.fill_between(d, data['Upload'] - 0.1, y2=0, where=(True),facecolor=up_c1, alpha=0.4, interpolate=True)
 
 
 #plt.fill_between(d, data['Download'], data['Upload'], where=data['Download'] < data['Upload'],facecolor=up_c2, alpha=0.9, interpolate=True)
@@ -143,17 +145,20 @@ blue_patch = mpatches.Patch(color=down_c1, label=name1)
 red_patch = mpatches.Patch(color=up_c1, label=name2)
 plt.xlabel("Time", fontsize=20)
 plt.ylabel("Speed (Mbps)", fontsize=20)
-plt.figlegend([blue_patch, red_patch], ('Download', 'Upload'), loc=(0.75, 0.81), fancybox=True, framealpha=0.8, shadow=True, fontsize=15)
+plt.figlegend([blue_patch, red_patch], ('Download', 'Upload'), loc=(0.1, 0.2), fancybox=True, framealpha=0.6, shadow=True, fontsize=15)
 
 plt.xticks(rotation=25, color="k")
 plt.xticks(time_of_test1[::label_skipper], time_of_test2[::label_skipper])
 plt.savefig('net_speed_plot1.png')
+plt.show()
 plt.close()
 
 #Latency Plot
 #plt.figure()
 plt.figure(2, figsize=(12.5,7.5))
-plt.title("Latency Over Time", fontsize=30, y=0.9)
+plt.title("Latency Over Time", fontsize=30, y=1.0)
+plt.ylim(bottom=0)
+plt.ylim(top=max(data['Latency'])*1.1)
 plt.plot_date(time_stretch, lat_stretch, 'go', mfc=gray_c1, markevery=multiplier, ms=msize)
 plt.plot_date(data['Time'], data['Latency'], '-', color=gray_c1, lw=msize/2, alpha=0.75)
 
@@ -168,5 +173,5 @@ plt.ylabel("Latency (ms)", fontsize=20)
 
 # %% Save and show figure
 plt.savefig('net_speed_plot2.png')
-#plt.show()
+plt.show()
 plt.close()
