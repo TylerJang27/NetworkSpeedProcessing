@@ -33,12 +33,9 @@ time_of_test2 = []
 
 for x in range(num_lines-data_to_show, num_lines):
     time_data.append((lines[x][100:126]))
-    print(time_data[len(time_data)-1])
     new_date=dateutil.parser.parse(lines[x][100:126])
     time_of_test1.append(new_date)
 f.close()
-
-print(speed_data)
 
 # Copy data from each column into new variables
 down_speed = speed_data[num_lines-data_to_show-4:num_lines-4, 0].copy()
