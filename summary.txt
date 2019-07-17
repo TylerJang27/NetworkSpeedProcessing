@@ -1,0 +1,5 @@
+location:0 "Durham, NC"
+download:0 50946655.985289186
+upload:0 54693700.61157013
+time:0 "2019-07-17T19:11:22.619416Z"
+latency:0 17.484

@@ -16,7 +16,7 @@ from scipy.interpolate import spline
 import dateutil.parser
 
 # %% Global variables necessary for user customization
-data_to_show = 10 ####should be 14 by default once we set it up #already accounted for top-down bottom-up order
+data_to_show = 14 ####should be 14 by default once we set it up #already accounted for top-down bottom-up order
 label_skipper = data_to_show // 7
 
 # %% Prepare data   
@@ -143,7 +143,7 @@ blue_patch = mpatches.Patch(color=down_c1, label=name1)
 red_patch = mpatches.Patch(color=up_c1, label=name2)
 plt.xlabel("Time", fontsize=20)
 plt.ylabel("Speed (Mbps)", fontsize=20)
-plt.figlegend([blue_patch, red_patch], ('Download', 'Upload'), loc=(0.1, 0.2), fancybox=True, framealpha=0.6, shadow=True, fontsize=15)
+plt.figlegend([blue_patch, red_patch], ('Download', 'Upload'), loc=(0.14, 0.16), fancybox=True, framealpha=0.6, shadow=True, fontsize=15)
 
 plt.xticks(rotation=25, color="k")
 plt.xticks(time_of_test1[::label_skipper], time_of_test2[::label_skipper])
