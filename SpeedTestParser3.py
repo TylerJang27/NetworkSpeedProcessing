@@ -38,6 +38,7 @@ for x in range(num_lines-data_to_show, num_lines):
 f.close()
 
 # Copy data from each column into new variables
+#0==num_lines-data_to_show-4
 down_speed = speed_data[num_lines-data_to_show-4:num_lines-4, 0].copy()
 down_speed = down_speed / 1000000
 up_speed = speed_data[num_lines-data_to_show-4:num_lines-4, 1].copy()
