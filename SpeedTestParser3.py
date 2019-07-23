@@ -16,7 +16,7 @@ from scipy.interpolate import spline
 import dateutil.parser
 
 # %% Global variables necessary for user customization
-data_to_show = 14 ####should be 14 by default once we set it up #already accounted for top-down bottom-up order
+data_to_show = 10 ####should be 14 by default once we set it up #already accounted for top-down bottom-up order
 label_skipper = data_to_show // 7
 
 # %% Prepare data   
@@ -112,11 +112,12 @@ ylim_top=max(max(data['Download']), max(data['Upload']))*1.1
 plt.ylim(top=ylim_top)
 
 #Download and Upload Speed
-plt.plot_date(data['Time'], data['Upload'], '-', color=up_c1, lw=msize/2, alpha=0.8)
-plt.plot_date(data['Time'], data['Download'], '-', color=down_c1, lw=msize/2, alpha=0.5)
+###plt.plot_date(data['Time'], data['Upload'], '-', color=up_c1, lw=msize/2, alpha=0.8)
+###plt.plot_date(data['Time'], data['Download'], '-', color=down_c1, lw=msize/2, alpha=0.5)
 plt.plot_date(time_stretch, down_stretch, 'yo', mfc=down_c1, markevery=multiplier, ms=msize)
 plt.plot_date(time_stretch, up_stretch, 'bo', mfc=up_c1, markevery=multiplier, ms=msize)
-
+plt.plot_date(time_stretch, down_stretch, '-', color=down_c1, lw=msize/2, alpha=0.9, markevery=multiplier)
+plt.plot_date(time_stretch, up_stretch, '-', color=up_c1, lw=msize/2, alpha=0.9, markevery=multiplier)
 
 #Shading
 d = data['Time'].values
@@ -143,10 +144,16 @@ blue_patch = mpatches.Patch(color=down_c1, label=name1)
 red_patch = mpatches.Patch(color=up_c1, label=name2)
 plt.xlabel("Time", fontsize=20)
 plt.ylabel("Speed (Mbps)", fontsize=20)
-plt.figlegend([blue_patch, red_patch], ('Download', 'Upload'), loc=(0.14, 0.16), fancybox=True, framealpha=0.6, shadow=True, fontsize=15)
+plt.figlegend([blue_patch, red_patch], ('Download', 'Upload'), loc=(0.1, 0.2), fancybox=True, framealpha=0.6, shadow=True, fontsize=15)
 
+label_freq=pd.Timedelta((youngest-oldest)/(data_to_show - 1)) ###ADDED THIS
+date_locs = pd.date_range(start=oldest, end=youngest, freq=label_freq)###ADDED THIS
+date_labels = []###ADDED THIS
+for k in date_locs:###ADDED THIS
+    date_labels.append(k.strftime('%m/%d %H:%m'))###ADDED THIS
 plt.xticks(rotation=25, color="k")
-plt.xticks(time_of_test1[::label_skipper], time_of_test2[::label_skipper])
+plt.xticks(date_locs, date_labels)###ADDED THIS
+#plt.xticks(time_of_test1[::label_skipper], time_of_test2[::label_skipper])###REMOVED THIS
 plt.savefig('net_speed_plot1.png')
 plt.show()
 plt.close()
@@ -157,16 +164,19 @@ plt.figure(2, figsize=(12.5,7.5))
 plt.title("Latency Over Time", fontsize=30, y=1.0)
 plt.ylim(bottom=0)
 plt.ylim(top=max(data['Latency'])*1.1)
-plt.plot_date(time_stretch, lat_stretch, 'go', mfc=gray_c1, markevery=multiplier, ms=msize)
-plt.plot_date(data['Time'], data['Latency'], '-', color=gray_c1, lw=msize/2, alpha=0.75)
+plt.plot_date(time_stretch, lat_stretch, 'o', mfc=gray_c1, markevery=multiplier, ms=msize)
+plt.plot_date(time_stretch, lat_stretch, '-', color=gray_c1, lw=msize/2, alpha=0.9, markevery=multiplier)
+###plt.plot_date(data['Time'], data['Latency'], '-', color=gray_c1, lw=msize/2, alpha=0.75)
 
-plt.fill_between(d, data['Latency'], y2=0, facecolor=gray_c2, alpha=0.95, interpolate=True)
+
+###plt.fill_between(d, data['Latency'], y2=0, facecolor=gray_c2, alpha=0.95, interpolate=True)
 #plt.fill_between(d, data['Latency'] - 7, y2=0, facecolor=lat_c1, alpha=0.9, interpolate=True)
 
 plt.xlabel("Time", fontsize=20)
 plt.grid(alpha=0.4)
 plt.xticks(rotation=25, color="k")
-plt.xticks(time_of_test1[::label_skipper], time_of_test2[::label_skipper])
+plt.xticks(date_locs, date_labels) ###ADDED THIS
+#plt.xticks(time_of_test1[::label_skipper], time_of_test2[::label_skipper])###REMOVED THIS
 plt.ylabel("Latency (ms)", fontsize=20)
 
 # %% Save and show figure
