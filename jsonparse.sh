@@ -1,16 +1,19 @@
 #!/bin/bash
+cd $(dirname $0)
 
 #check for linux updates and the appropiate packages
 
 numtests=$1
-server=$2
-update=$3
+summ=$2
+server=$3
+update=$4
+
 
 if [[ "$update" == "u" ]]; then
-	sudo apt-get dist-upgrade
-	sudo apt-get install speeedtest-cli
-	sudo apt-get install bc
-	sudo apt-get install jq
+	echo "y" | sudo apt-get dist-upgrade
+	echo "y" | sudo apt-get install speedtest-cli
+	echo "y" | sudo apt-get install bc
+	echo "y" | sudo apt-get install jq
 fi
 
 touch summary.temp
@@ -111,8 +114,12 @@ sudo touch SpeedTestTable.txt
 sudo chmod 777 SpeedTestTable.txt
 
 ./SpeedTestTable.sh $numtests
-./create_all_logs.sh
-./SpeedTestParser3.py
+./create_all_logs.sh $summ
+if [[ $summ == 's' ]]; then
+	echo nvmd
+else
+	./SpeedTestParser3.py
+fi
 
 for (( y=0; y<=10; y++ ))
 do

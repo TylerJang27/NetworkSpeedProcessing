@@ -1,3 +1,0 @@
-word="new word"
-number=7
-binary=true

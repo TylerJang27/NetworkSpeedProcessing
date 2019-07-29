@@ -1,6 +1,8 @@
 #!/bin/bash
 #create a running log of the last 1000 speed tests
 
+add_to_summ=$1
+
 #Create top of the table
 touch temp_log.txt
 echo "                                                            Last 1000 Speed Tests           " >>temp_log.txt
@@ -37,12 +39,16 @@ mv temp_log.txt all_speed_tests.txt
 ##Print bottom dashes for format
 ##echo "----------------------------------------------------------------------------------------------------------------------------------------------------------------"
 
-touch summ.txt
-echo "                                                     Last 14 Speed Test Summaries           " >>summ.txt
-echo "----------------------------------------------------------------------------------------------------------------------------------------------------------------" >>summ.txt
-echo -n "      |">>summ.txt; printf "%-30s"      "location"      "download"      "upload"        "time"      "latency">>summ.txt       ; echo >>summ.txt
-echo  "----------------------------------------------------------------------------------------------------------------------------------------------------------------" >>summ.txt
-cat SpeedTestTable.txt | tail -n +5 |tail -n 14 >> summ.txt
-cat last_speed_test.txt|head -n 1 >> summ.txt
-echo "" >> summ.txt
-mv summ.txt SpeedTestTable.txt
+if [[ "$add_to_summ" == "s" ]]; then
+	echo nvmd
+else
+	touch summ.txt
+	echo "                                                     Last 14 Speed Test Summaries           " >>summ.txt
+	echo "----------------------------------------------------------------------------------------------------------------------------------------------------------------" >>summ.txt
+	echo -n "      |">>summ.txt; printf "%-30s"      "location"      "download"      "upload"        "time"      "latency">>summ.txt       ; echo >>summ.txt
+	echo  "----------------------------------------------------------------------------------------------------------------------------------------------------------------" >>summ.txt
+	cat SpeedTestTable.txt | tail -n +5 |tail -n 14 >> summ.txt
+	cat last_speed_test.txt|head -n 1 >> summ.txt
+	echo "" >> summ.txt
+	mv summ.txt SpeedTestTable.txt
+fi

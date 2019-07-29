@@ -66,6 +66,16 @@ mv last.temp last_speed_test.txt
 
 printf "%s 0 | " "test" >> last_speed_test.txt
 
+if [[ -z ${avgarray[1]} ]]; then
+	avgarray[1]="0"
+fi
+if [[ -z ${avgarray[2]} ]]; then
+	avgarray[2]="0"
+fi
+if [[ -z ${avgarray[4]} ]]; then
+	avgarray[4]="0"
+fi
+
 printf "%-30s" ${avgarray[0]} >> last_speed_test.txt
 printf "%-30.8f" ${avgarray[1]} >> last_speed_test.txt
 printf "%-30.8f" ${avgarray[2]} >> last_speed_test.txt

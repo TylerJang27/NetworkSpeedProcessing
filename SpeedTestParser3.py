@@ -144,7 +144,7 @@ blue_patch = mpatches.Patch(color=down_c1, label=name1)
 red_patch = mpatches.Patch(color=up_c1, label=name2)
 plt.xlabel("Time", fontsize=20)
 plt.ylabel("Speed (Mbps)", fontsize=20)
-plt.figlegend([blue_patch, red_patch], ('Download', 'Upload'), loc=(0.1, 0.2), fancybox=True, framealpha=0.6, shadow=True, fontsize=15)
+plt.figlegend([blue_patch, red_patch], ('Download', 'Upload'), loc=(0.15, 0.2), fancybox=True, framealpha=0.6, shadow=True, fontsize=15)
 
 label_freq=pd.Timedelta((youngest-oldest)/(data_to_show - 1)) ###ADDED THIS
 date_locs = pd.date_range(start=oldest, end=youngest, freq=label_freq)###ADDED THIS
