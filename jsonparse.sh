@@ -3,12 +3,16 @@ cd $(dirname $0)
 
 #check for linux updates and the appropiate packages
 
+#number of tests to run (default 4)
 numtests=$1
+#if s, add new tests to summary table
 summ=$2
+#server to run tests on (default 16970)
 server=$3
+#if u, update packages
 update=$4
 
-
+#update packages
 if [[ "$update" == "u" ]]; then
 	echo "y" | sudo apt-get dist-upgrade
 	echo "y" | sudo apt-get install speedtest-cli
@@ -19,7 +23,7 @@ fi
 touch summary.temp
 mv summary.temp summary.txt
 
-
+#set defaults
 if [[ -z $numtests ]]; then
 	numtests=4
 fi
@@ -34,9 +38,8 @@ echo 0 > $TEMPFILE
 sudo touch summary.txt
 sudo chmod 777 summary.txt
 
-#for loop to run the test ten times
+#for loop to run the test numtest times
 (for test in $(seq 1 $numtests); do
-
 (
   (
 
@@ -113,14 +116,17 @@ echo ":)"
 sudo touch SpeedTestTable.txt
 sudo chmod 777 SpeedTestTable.txt
 
+#add new data to logs
 ./SpeedTestTable.sh $numtests
 ./create_all_logs.sh $summ
+#if this data should be included in the summary, graph it
 if [[ $summ == 's' ]]; then
 	echo nvmd
 else
 	./SpeedTestParser3.py
 fi
 
+#remove excesss speedtestdata
 for (( y=0; y<=10; y++ ))
 do
 	echo $y

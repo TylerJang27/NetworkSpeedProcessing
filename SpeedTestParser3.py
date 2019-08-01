@@ -16,12 +16,12 @@ from scipy.interpolate import spline
 import dateutil.parser
 
 # %% Global variables necessary for user customization
-data_to_show = 10 ####should be 14 by default once we set it up #already accounted for top-down bottom-up order
+data_to_show = 10 		#can be modified to display up to 14 data points
 label_skipper = data_to_show // 7
 
 # %% Prepare data   
 # Load data from Sample_to_parse.txt
-speed_data = np.loadtxt('SpeedTestTable.txt', skiprows=4, usecols=(4,5,7)) #missing date ()
+speed_data = np.loadtxt('SpeedTestTable.txt', skiprows=4, usecols=(4,5,7)) #does not load date
 
 # Read dates
 f=open('SpeedTestTable.txt', 'r')
@@ -38,7 +38,6 @@ for x in range(num_lines-data_to_show, num_lines):
 f.close()
 
 # Copy data from each column into new variables
-#0==num_lines-data_to_show-4
 down_speed = speed_data[num_lines-data_to_show-4:num_lines-4, 0].copy()
 down_speed = down_speed / 1000000
 up_speed = speed_data[num_lines-data_to_show-4:num_lines-4, 1].copy()
@@ -48,9 +47,6 @@ num_points=1000
 num_points2=(int)(num_points * (down_speed.size-1)/down_speed.size)
 time_of_test=np.arange(0, (int)(down_speed.size), 1)
 time_model = np.linspace(np.min(time_of_test), np.max(time_of_test), num_points2)
-
-
-
 
 # %% Generate estimates and model
 down_model = spline(time_of_test,down_speed,time_model)
@@ -67,15 +63,7 @@ lat_avg = np.mean(latency)
 oldest = min(time_of_test1)
 youngest = max(dt for dt in time_of_test1)
 my_freq=pd.Timedelta((youngest-oldest)/num_points2)
-
-#date_model = pd.date_range(start=oldest, end=youngest, periods=num_points2)
 date_model = pd.date_range(start=oldest, end=youngest, freq=my_freq)[0:len(down_model)]
-#print(len(date_model))
-#print(num_points2)
-#print(len(down_model))
-#print(len(up_model))
-#print(down_speed[::1])
-#print(down_model[::10])
 data = pd.DataFrame({'Download': down_model, 'Upload': up_model, 'Latency': lat_model, 'Time': date_model})
 multiplier = (int)(num_points2/len(time_data))
 time_stretch = [val for val in time_of_test1 for _ in range(multiplier)]
@@ -83,6 +71,8 @@ down_stretch = [val for val in down_speed for _ in range(multiplier)]
 up_stretch = [val for val in up_speed for _ in range(multiplier)]
 lat_stretch = [val for val in latency for _ in range(multiplier)]
 msize=8
+
+# %% Set color options
 up_c1=(0, 0.33, 0.53)
 up_c2=(0.02,0.47,0.69)
 down_c1=(0.91, 0.6, 0.14)
@@ -101,7 +91,6 @@ for k in time_of_test1:
     time_of_test2.append(k.strftime('%m/%d %H:%m'))
 
 # %%Plot Graphs of Data
-#plt.figure()
 plt.figure(1, figsize=(12.5,7.5))
 plt.rc('xtick',labelsize=15)
 plt.rc('ytick',labelsize=15)
@@ -112,8 +101,8 @@ ylim_top=max(max(data['Download']), max(data['Upload']))*1.1
 plt.ylim(top=ylim_top)
 
 #Download and Upload Speed
-###plt.plot_date(data['Time'], data['Upload'], '-', color=up_c1, lw=msize/2, alpha=0.8)
-###plt.plot_date(data['Time'], data['Download'], '-', color=down_c1, lw=msize/2, alpha=0.5)
+###plt.plot_date(data['Time'], data['Upload'], '-', color=up_c1, lw=msize/2, alpha=0.8) 	#Original way of plotting a spline model, rather than the points
+###plt.plot_date(data['Time'], data['Download'], '-', color=down_c1, lw=msize/2, alpha=0.5) 	#Original way of plotting a spline model, rather than the points
 plt.plot_date(time_stretch, down_stretch, 'yo', mfc=down_c1, markevery=multiplier, ms=msize)
 plt.plot_date(time_stretch, up_stretch, 'bo', mfc=up_c1, markevery=multiplier, ms=msize)
 plt.plot_date(time_stretch, down_stretch, '-', color=down_c1, lw=msize/2, alpha=0.9, markevery=multiplier)
@@ -121,62 +110,64 @@ plt.plot_date(time_stretch, up_stretch, '-', color=up_c1, lw=msize/2, alpha=0.9,
 
 #Shading
 d = data['Time'].values
-###plt.fill_between(d, data['Download'], data['Upload'], where=data['Download'] >= data['Upload'],facecolor=down_c2, alpha=0.9, interpolate=True)
-#plt.fill_between(d, data['Download'] - 0.1, y2=0, where=data['Download']-0.1 >= data['Upload'],facecolor=down_c2, alpha=0.4, interpolate=True)
-#plt.fill_between(d, data['Download'] - 0.1, y2=0, where=data['Download']-0.1 < data['Upload'],facecolor=down_c2, alpha=0.4, interpolate=True)
+###plt.fill_between(d, data['Download'], data['Upload'], where=data['Download'] >= data['Upload'],facecolor=down_c2, alpha=0.9, interpolate=True) 	#shade between d,u v2
+#plt.fill_between(d, data['Download'] - 0.1, y2=0, where=data['Download']-0.1 >= data['Upload'],facecolor=down_c2, alpha=0.4, interpolate=True)		#shade between d,0
+#plt.fill_between(d, data['Download'] - 0.1, y2=0, where=data['Download']-0.1 < data['Upload'],facecolor=down_c2, alpha=0.4, interpolate=True)		#shade between d,0
 
-###plt.fill_between(d, data['Upload'], y2=0, where=data['Download'] >= data['Upload'],facecolor=up_c2, alpha=0.9, interpolate=True)
-###plt.fill_between(d, data['Upload'] - 0.65, y2=0, where=data['Download'] >= data['Upload'],facecolor=up_c1, alpha=0.9, interpolate=True)
-#plt.fill_between(d, data['Upload'] - 0.1, y2=0, where=(True),facecolor=up_c1, alpha=0.4, interpolate=True)
+###plt.fill_between(d, data['Upload'], y2=0, where=data['Download'] >= data['Upload'],facecolor=up_c2, alpha=0.9, interpolate=True)			#shade between u,0 v2
+###plt.fill_between(d, data['Upload'] - 0.65, y2=0, where=data['Download'] >= data['Upload'],facecolor=up_c1, alpha=0.9, interpolate=True)		#shade between u,0 v2
+#plt.fill_between(d, data['Upload'] - 0.1, y2=0, where=(True),facecolor=up_c1, alpha=0.4, interpolate=True)						#shade between u,0
 
 
-#plt.fill_between(d, data['Download'], data['Upload'], where=data['Download'] < data['Upload'],facecolor=up_c2, alpha=0.9, interpolate=True)
-###plt.fill_between(d, data['Download'] - 0.65, y2=0, where=data['Download'] < data['Upload'],facecolor=up_c1, alpha=0.9, interpolate=True)
+#plt.fill_between(d, data['Download'], data['Upload'], where=data['Download'] < data['Upload'],facecolor=up_c2, alpha=0.9, interpolate=True)		#shade between d,u
+###plt.fill_between(d, data['Download'] - 0.65, y2=0, where=data['Download'] < data['Upload'],facecolor=up_c1, alpha=0.9, interpolate=True)		#shade between d,0 v2
 
-#plt.fill_between(d, data['Download'] - 0.75, data['Upload'], where=data['Download'] < data['Upload'] - 0.65,facecolor=(0.9, 0.5, 0.5), alpha=0.9, interpolate=True)
+#plt.fill_between(d, data['Download'] - 0.75, data['Upload'], where=data['Download'] < data['Upload'] - 0.65,facecolor=(0.9, 0.5, 0.5), alpha=0.9, interpolate=True)	#shade between d,u
 
-#plt.fill_between(d, data['Download'], y2=0, where=data['Download'] < data['Upload'],facecolor=down_c2, alpha=0.9, interpolate=True)
-#plt.fill_between(d, data['Download'] - 0.65, y2=0, where=data['Download'] < data['Upload'],facecolor=down_c1, alpha=0.9, interpolate=True)
+#plt.fill_between(d, data['Download'], y2=0, where=data['Download'] < data['Upload'],facecolor=down_c2, alpha=0.9, interpolate=True)			#shade between d,0
+#plt.fill_between(d, data['Download'] - 0.65, y2=0, where=data['Download'] < data['Upload'],facecolor=down_c1, alpha=0.9, interpolate=True)		#shade between d,0
 
-###plt.fill_between(d, data['Upload'] - 0.65, data['Download'], where=data['Download'] < data['Upload'] - 0.65,facecolor=up_c1, alpha=0.9, interpolate=True)
+###plt.fill_between(d, data['Upload'] - 0.65, data['Download'], where=data['Download'] < data['Upload'] - 0.65,facecolor=up_c1, alpha=0.9, interpolate=True)		#shade between d,u v2
 
+#Legend formatter
 blue_patch = mpatches.Patch(color=down_c1, label=name1)
 red_patch = mpatches.Patch(color=up_c1, label=name2)
 plt.xlabel("Time", fontsize=20)
 plt.ylabel("Speed (Mbps)", fontsize=20)
 plt.figlegend([blue_patch, red_patch], ('Download', 'Upload'), loc=(0.15, 0.2), fancybox=True, framealpha=0.6, shadow=True, fontsize=15)
 
-label_freq=pd.Timedelta((youngest-oldest)/(data_to_show - 1)) ###ADDED THIS
-date_locs = pd.date_range(start=oldest, end=youngest, freq=label_freq)###ADDED THIS
-date_labels = []###ADDED THIS
-for k in date_locs:###ADDED THIS
-    date_labels.append(k.strftime('%m/%d %H:%m'))###ADDED THIS
+#Label formatter
+label_freq=pd.Timedelta((youngest-oldest)/(data_to_show - 1))
+date_locs = pd.date_range(start=oldest, end=youngest, freq=label_freq)
+date_labels = []
+for k in date_locs:
+    date_labels.append(k.strftime('%m/%d %H:%m'))
 plt.xticks(rotation=25, color="k")
-plt.xticks(date_locs, date_labels)###ADDED THIS
-#plt.xticks(time_of_test1[::label_skipper], time_of_test2[::label_skipper])###REMOVED THIS
+plt.xticks(date_locs, date_labels)
+#plt.xticks(time_of_test1[::label_skipper], time_of_test2[::label_skipper])	#Original implementation
 plt.savefig('net_speed_plot1.png')
 plt.show()
 plt.close()
 
 #Latency Plot
-#plt.figure()
 plt.figure(2, figsize=(12.5,7.5))
 plt.title("Latency Over Time", fontsize=30, y=1.0)
 plt.ylim(bottom=0)
 plt.ylim(top=max(data['Latency'])*1.1)
 plt.plot_date(time_stretch, lat_stretch, 'o', mfc=gray_c1, markevery=multiplier, ms=msize)
 plt.plot_date(time_stretch, lat_stretch, '-', color=gray_c1, lw=msize/2, alpha=0.9, markevery=multiplier)
-###plt.plot_date(data['Time'], data['Latency'], '-', color=gray_c1, lw=msize/2, alpha=0.75)
+###plt.plot_date(data['Time'], data['Latency'], '-', color=gray_c1, lw=msize/2, alpha=0.75)	#Original plot of spline model, not actual points
 
 
-###plt.fill_between(d, data['Latency'], y2=0, facecolor=gray_c2, alpha=0.95, interpolate=True)
-#plt.fill_between(d, data['Latency'] - 7, y2=0, facecolor=lat_c1, alpha=0.9, interpolate=True)
+###plt.fill_between(d, data['Latency'], y2=0, facecolor=gray_c2, alpha=0.95, interpolate=True)	#shade between L,0 v2
+#plt.fill_between(d, data['Latency'] - 7, y2=0, facecolor=lat_c1, alpha=0.9, interpolate=True)	#shade between L,0
 
+#Format labels
 plt.xlabel("Time", fontsize=20)
 plt.grid(alpha=0.4)
 plt.xticks(rotation=25, color="k")
-plt.xticks(date_locs, date_labels) ###ADDED THIS
-#plt.xticks(time_of_test1[::label_skipper], time_of_test2[::label_skipper])###REMOVED THIS
+plt.xticks(date_locs, date_labels)
+#plt.xticks(time_of_test1[::label_skipper], time_of_test2[::label_skipper])	#Original implementation
 plt.ylabel("Latency (ms)", fontsize=20)
 
 # %% Save and show figure

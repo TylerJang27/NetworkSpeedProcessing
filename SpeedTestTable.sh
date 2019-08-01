@@ -45,6 +45,7 @@ do
     echo >>all_speed_tests.txt
 done
 
+#Grab the most recent data to add to last_speed_test.txt
 totals=()
 avgarray=()
 totals[0]=0
@@ -60,9 +61,6 @@ avgarray[4]=$(bc -l <<< "${totals[4]} / $numtests" )
 
 touch last.temp
 mv last.temp last_speed_test.txt
-#echo ${avgarray[3]}
-
-#echo start
 
 printf "%s 0 | " "test" >> last_speed_test.txt
 
@@ -76,6 +74,7 @@ if [[ -z ${avgarray[4]} ]]; then
 	avgarray[4]="0"
 fi
 
+#Print to last_speed_test.txt
 printf "%-30s" ${avgarray[0]} >> last_speed_test.txt
 printf "%-30.8f" ${avgarray[1]} >> last_speed_test.txt
 printf "%-30.8f" ${avgarray[2]} >> last_speed_test.txt
